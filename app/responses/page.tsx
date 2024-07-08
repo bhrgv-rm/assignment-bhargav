@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 interface FormData {
@@ -8,7 +8,7 @@ interface FormData {
   mobile: string;
 }
 
-export default function Responses() {
+function Component() {
   const [formData, setFormData] = useState<FormData | null>(null);
   const params = useSearchParams();
 
@@ -21,6 +21,7 @@ export default function Responses() {
       setFormData({ name, roll, mobile });
     }
   }, [params]);
+
   if (!formData) {
     return <p>No form data found. Please submit the form first.</p>;
   }
@@ -28,7 +29,7 @@ export default function Responses() {
   return (
     <div className="page-container">
       <div className="container">
-        <h1 className="title">Data Submitted</h1>
+        <h1 className="title">Form Data</h1>
         <p className="text">
           <strong>Name:</strong> {formData.name}
         </p>
@@ -40,34 +41,43 @@ export default function Responses() {
         </p>
       </div>
 
-      {/* CSS in JSX */}
       <style jsx>{`
         .page-container {
           display: flex;
           justify-content: center;
           align-items: center;
-          min-height: 100vh;
+          min-height: 100vh; /* Full viewport height */
+          background-color: #e0e0e0; /* Optional: Background color for the entire page */
         }
 
         .container {
-          padding: 20px 40px;
-          background-color: #334166;
+          padding: 16px;
+          background-color: #f9f9f9;
           border-radius: 8px;
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-          width: auto;
-          text-align: center;
+          max-width: 400px; /* Optional: Set a max width for the box */
+          text-align: center; /* Center align text within the box */
         }
 
         .title {
           font-size: 24px;
           margin-bottom: 12px;
+          color: #333;
         }
 
         .text {
           font-size: 18px;
           margin: 8px 0;
+          color: #555;
         }
       `}</style>
     </div>
+  );
+}
+export default function Responses() {
+  return (
+    <Suspense fallback={<div>Loading Content...</div>}>
+      <Component />
+    </Suspense>
   );
 }
