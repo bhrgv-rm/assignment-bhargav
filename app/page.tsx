@@ -1,113 +1,137 @@
+"use client";
+import { useState, ChangeEvent, FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
+import home from "../public/home.svg";
+import pfp from "../public/Ellipse 1.svg";
+
+interface FormData {
+  name: string;
+  roll: string;
+  mobile: string;
+}
 
 export default function Home() {
+  const router = useRouter();
+  const [formData, setFormData] = useState<FormData>({
+    name: "",
+    roll: "",
+    mobile: "",
+  });
+
+  const [errors, setErrors] = useState<FormData>({
+    name: "",
+    roll: "",
+    mobile: "",
+  });
+
+  const validateField = (name: string, value: string) => {
+    let error = "";
+
+    if (name === "name" && !value.match(/^[a-zA-Z0-9 ]*$/)) {
+      error = "No Special Characters allowed";
+    }
+
+    if (name === "roll") {
+      if (value.length !== 9) {
+        error = "Length must be 9 characters long";
+      }
+      if (!/^[a-zA-Z0-9]*$/.test(value)) {
+        error += "<br /> Roll Number format must be proper";
+      }
+    }
+
+    if (name === "mobile" && !/^\d{10}$/.test(value)) {
+      error = "Length must be 10 digits long";
+    }
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: error,
+    }));
+  };
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevValues) => ({
+      ...prevValues,
+      [name]: value,
+    }));
+    validateField(name, value);
+  };
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const isValid =
+      Object.values(errors).every((error) => error === "") &&
+      Object.values(formData).every((value) => value !== "");
+
+    if (isValid) {
+      router.push(
+        `/responses?name=${formData.name}&roll=${formData.roll}&mobile=${formData.mobile}`
+      );
+    } else {
+      console.log("Form has errors:", errors);
+    }
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
+    <>
+      <div className="pb-9 pt-4 pl-7 header flex items-start w-full">
+        <Image src={home} height={18} alt="Home Icon" />
+        <p className="pl-1">HOME</p>
+      </div>
+      <div className="card h-auto flex flex-col mx-5 justify-center items-center">
+        <p className="mr-auto ml-5 mt-8 cursor-pointer">Home / Profile</p>
+        <Image src={pfp} width={100} alt="PFP" className="mt-5" />
+        <p className="mt-4 mb-9">person@gmail.com</p>
+        <form className="inputs flex flex-col mb-8" onSubmit={handleSubmit}>
+          <div className="one">
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Name"
+              autoComplete="off"
+              id="name"
             />
-          </a>
-        </div>
+            {errors.name && <p className="error-msgs">{errors.name}</p>}
+          </div>
+          <div className="one">
+            <input
+              type="text"
+              name="roll"
+              value={formData.roll}
+              onChange={handleChange}
+              placeholder="Roll Number"
+              autoComplete="off"
+              id="roll_no"
+            />
+            {errors.roll && (
+              <div
+                className="error-msgs"
+                dangerouslySetInnerHTML={{ __html: errors.roll }}
+              />
+            )}
+          </div>
+
+          <div className="one">
+            <input
+              type="tel"
+              name="mobile"
+              value={formData.mobile}
+              onChange={handleChange}
+              placeholder="Mobile Number"
+              autoComplete="off"
+              id="mobile_no"
+            />
+            {errors.mobile && <p className="error-msgs">{errors.mobile}</p>}
+          </div>
+          <input className="cursor-pointer" type="submit" value="Submit" />
+        </form>
       </div>
-
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+    </>
   );
 }
