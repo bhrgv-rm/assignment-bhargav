@@ -46,29 +46,26 @@ function Component() {
           display: flex;
           justify-content: center;
           align-items: center;
-          min-height: 100vh; /* Full viewport height */
-          background-color: #e0e0e0; /* Optional: Background color for the entire page */
+          height: 100vh;
         }
 
         .container {
           padding: 16px;
-          background-color: #f9f9f9;
+          background-color: #334166;
           border-radius: 8px;
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-          max-width: 400px; /* Optional: Set a max width for the box */
-          text-align: center; /* Center align text within the box */
+          max-width: 400px;
+          text-align: center;
         }
 
         .title {
           font-size: 24px;
           margin-bottom: 12px;
-          color: #333;
         }
 
         .text {
           font-size: 18px;
           margin: 8px 0;
-          color: #555;
         }
       `}</style>
     </div>
